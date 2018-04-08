@@ -45,8 +45,8 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVarP(&appName, "app", "a", "", "app name used to derive configuration paths")
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "", "config name used to derive the configuration file name")
+	rootCmd.PersistentFlags().StringVarP(&appName, "app", "a", "", "app name used to derive configuration file search paths (optional)")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config", "config name used to derive the configuration file name, defaults to 'config'")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -60,21 +60,11 @@ func initConfig() {
 		cfgFile = os.Getenv("CONFIGTOOL_CONFIG")
 	}
 
-	if appName == "" {
-		fmt.Fprintf(os.Stderr, "Missing appName")
-		os.Exit(1)
-	}
-
-	if cfgFile == "" {
-		fmt.Fprintf(os.Stderr, "Missing config file")
-		os.Exit(1)
-	}
-
 	if strings.Contains(cfgFile, "/") {
 		viper.SetConfigFile(cfgFile)
 	} else {
 		viper.SetConfigName(cfgFile)                 // name of config file (without extension)
-		viper.AddConfigPath(".")                     // optionally look for config in the working directory
+		viper.AddConfigPath("./." + appName)         // optionally look for config in the working directory
 		viper.AddConfigPath("$HOME/." + appName)     // call multiple times to add many search paths
 		viper.AddConfigPath("/etc/" + appName + "/") // path to look for the config file in
 	}
