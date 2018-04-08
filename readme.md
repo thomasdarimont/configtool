@@ -1,4 +1,5 @@
-# Simple command-line utility to read settings from configuration files
+# configtool
+Simple command-line utility to read settings from configuration files
 
 ```
 $ configtool
